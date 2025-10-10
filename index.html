@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Smart Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .task-item { animation: slideIn 0.3s ease-out; }
+        .fade-in { animation: slideIn 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <div id="app" class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Auth Screen -->
+        <div id="authScreen" class="fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">TaskFlow</span>
+                </h1>
+                <p class="text-slate-400">Smart task management for productive developers</p>
+            </div>
+
+            <div class="max-w-md mx-auto bg-slate-800/50 backdrop-blur-lg rounded-2xl border border-slate-700 p-8">
+                <div class="mb-6">
+                    <button id="signInBtn" class="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">
+                        Sign In with Email
+                    </button>
+                    <button id="signUpBtn" class="w-full mt-3 px-6 py-3 bg-slate-700 rounded-lg font-semibold hover:bg-slate-600 transition-all">
+                        Create Account
+                    </button>
+                </div>
+
+                <div id="authForm" class="hidden">
+                    <input type="email" id="email" placeholder="Email" class="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg mb-3 focus:outline-none focus:border-cyan-500">
+                    <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg mb-4 focus:outline-none focus:border-cyan-500">
+                    <button id="authSubmit" class="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold">
+                        Continue
+                    </button>
+                    <button id="authCancel" class="w-full mt-2 px-6 py-3 bg-slate-700 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+                </div>
+
+                <div class="mt-6 p-4 bg-slate-900/50 rounded-lg border border-slate-600">
+                    <p class="text-sm text-slate-300 mb-2">Demo Mode Available</p>
+                    <button id="demoBtn" class="w-full px-4 py-2 bg-slate-700 rounded-lg text-sm hover:bg-slate-600 transition-all">
+                        Try Without Account (Local Storage)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="mainApp" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                        TaskFlow
+                    </h1>
+                    <p class="text-slate-400 text-sm mt-1" id="userEmail"></p>
+                </div>
+                <button id="signOutBtn" class="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600 transition-all">
+                    Sign Out
+                </button>
+            </div>
+
+            <!-- Add Task Form -->
+            <div class="bg-slate-800/50 backdrop-blur-lg rounded-2xl border border-slate-700 p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Add New Task</h2>
+                <div class="flex gap-3">
+                    <input type="text" id="taskInput" placeholder="What needs to be done?"
+                        class="flex-1 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500">
+                    <select id="prioritySelect" class="px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                    <button id="addTaskBtn" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">
+                        Add Task
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex gap-2 mb-6">
+                <button class="filter-btn active px-4 py-2 rounded-lg transition-all" data-filter="all">All</button>
+                <button class="filter-btn px-4 py-2 rounded-lg transition-all" data-filter="active">Active</button>
+                <button class="filter-btn px-4 py-2 rounded-lg transition-all" data-filter="completed">Completed</button>
+                <button class="filter-btn px-4 py-2 rounded-lg transition-all" data-filter="high">High Priority</button>
+            </div>
+
+            <!-- Tasks List -->
+            <div id="tasksList" class="space-y-3">
+                <!-- Tasks will be rendered here -->
+            </div>
+
+            <!-- Stats -->
+            <div class="mt-6 grid grid-cols-3 gap-4">
+                <div class="bg-slate-800/50 backdrop-blur-lg rounded-xl border border-slate-700 p-4 text-center">
+                    <div class="text-3xl font-bold text-cyan-400" id="totalTasks">0</div>
+                    <div class="text-sm text-slate-400">Total</div>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur-lg rounded-xl border border-slate-700 p-4 text-center">
+                    <div class="text-3xl font-bold text-blue-400" id="activeTasks">0</div>
+                    <div class="text-sm text-slate-400">Active</div>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur-lg rounded-xl border border-slate-700 p-4 text-center">
+                    <div class="text-3xl font-bold text-green-400" id="completedTasks">0</div>
+                    <div class="text-sm text-slate-400">Completed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase setup
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_KEY = 'your-anon-key';
+        let supabase = null;
+        let isDemoMode = false;
+        let currentFilter = 'all';
+
+        // Try to initialize Supabase if credentials are available
+        try {
+            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) {
+            console.log('Supabase not configured, using demo mode');
+        }
+
+        // DOM Elements
+        const authScreen = document.getElementById('authScreen');
+        const mainApp = document.getElementById('mainApp');
+        const authForm = document.getElementById('authForm');
+        const signInBtn = document.getElementById('signInBtn');
+        const signUpBtn = document.getElementById('signUpBtn');
+        const demoBtn = document.getElementById('demoBtn');
+        const authSubmit = document.getElementById('authSubmit');
+        const authCancel = document.getElementById('authCancel');
+        const signOutBtn = document.getElementById('signOutBtn');
+        const taskInput = document.getElementById('taskInput');
+        const prioritySelect = document.getElementById('prioritySelect');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const tasksList = document.getElementById('tasksList');
+        const userEmail = document.getElementById('userEmail');
+
+        let isSignUp = false;
+
+        // Event Listeners
+        signInBtn.addEventListener('click', () => {
+            isSignUp = false;
+            showAuthForm();
+        });
+
+        signUpBtn.addEventListener('click', () => {
+            isSignUp = true;
+            showAuthForm();
+        });
+
+        demoBtn.addEventListener('click', startDemoMode);
+        authCancel.addEventListener('click', hideAuthForm);
+        authSubmit.addEventListener('click', handleAuth);
+        signOutBtn.addEventListener('click', handleSignOut);
+        addTaskBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-slate-700');
+                });
+                e.target.classList.add('active', 'bg-slate-700');
+                currentFilter = e.target.dataset.filter;
+                renderTasks();
+            });
+        });
+
+        function showAuthForm() {
+            signInBtn.classList.add('hidden');
+            signUpBtn.classList.add('hidden');
+            authForm.classList.remove('hidden');
+            authSubmit.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+        }
+
+        function hideAuthForm() {
+            signInBtn.classList.remove('hidden');
+            signUpBtn.classList.remove('hidden');
+            authForm.classList.add('hidden');
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (!supabase) {
+                alert('Database not configured. Please use Demo Mode.');
+                return;
+            }
+
+            try {
+                if (isSignUp) {
+                    const { error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    alert('Check your email for verification link!');
+                } else {
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    showMainApp(email);
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function startDemoMode() {
+            isDemoMode = true;
+            showMainApp('demo@taskflow.local');
+            loadDemoTasks();
+        }
+
+        function showMainApp(email) {
+            authScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            userEmail.textContent = isDemoMode ? 'Demo Mode (Local Storage)' : email;
+            renderTasks();
+        }
+
+        function handleSignOut() {
+            if (supabase && !isDemoMode) {
+                supabase.auth.signOut();
+            }
+            isDemoMode = false;
+            mainApp.classList.add('hidden');
+            authScreen.classList.remove('hidden');
+            hideAuthForm();
+        }
+
+        function loadDemoTasks() {
+            const stored = localStorage.getItem('demoTasks');
+            if (!stored) {
+                const demoTasks = [
+                    { id: 1, title: 'Complete React tutorial', completed: false, priority: 'high', created_at: new Date().toISOString() },
+                    { id: 2, title: 'Build portfolio website', completed: true, priority: 'medium', created_at: new Date().toISOString() },
+                    { id: 3, title: 'Learn TypeScript basics', completed: false, priority: 'medium', created_at: new Date().toISOString() }
+                ];
+                localStorage.setItem('demoTasks', JSON.stringify(demoTasks));
+            }
+        }
+
+        function getTasks() {
+            if (isDemoMode) {
+                return JSON.parse(localStorage.getItem('demoTasks') || '[]');
+            }
+            return [];
+        }
+
+        function saveTasks(tasks) {
+            if (isDemoMode) {
+                localStorage.setItem('demoTasks', JSON.stringify(tasks));
+            }
+        }
+
+        function addTask() {
+            const title = taskInput.value.trim();
+            if (!title) return;
+
+            const tasks = getTasks();
+            const newTask = {
+                id: Date.now(),
+                title,
+                priority: prioritySelect.value,
+                completed: false,
+                created_at: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            saveTasks(tasks);
+            taskInput.value = '';
+            renderTasks();
+        }
+
+        function toggleTask(id) {
+            const tasks = getTasks();
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks(tasks);
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            const tasks = getTasks().filter(t => t.id !== id);
+            saveTasks(tasks);
+            renderTasks();
+        }
+
+        function renderTasks() {
+            let tasks = getTasks();
+
+            // Apply filter
+            if (currentFilter === 'active') {
+                tasks = tasks.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                tasks = tasks.filter(t => t.completed);
+            } else if (currentFilter === 'high') {
+                tasks = tasks.filter(t => t.priority === 'high');
+            }
+
+            // Update stats
+            const allTasks = getTasks();
+            document.getElementById('totalTasks').textContent = allTasks.length;
+            document.getElementById('activeTasks').textContent = allTasks.filter(t => !t.completed).length;
+            document.getElementById('completedTasks').textContent = allTasks.filter(t => t.completed).length;
+
+            // Render tasks
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<div class="text-center text-slate-400 py-12">No tasks found. Add one above!</div>';
+                return;
+            }
+
+            tasksList.innerHTML = tasks.map(task => {
+                const priorityColors = {
+                    high: 'border-red-500/50 bg-red-500/10',
+                    medium: 'border-yellow-500/50 bg-yellow-500/10',
+                    low: 'border-green-500/50 bg-green-500/10'
+                };
+
+                return `
+                    <div class="task-item bg-slate-800/50 backdrop-blur-lg rounded-xl border ${priorityColors[task.priority]} p-4 flex items-center gap-4">
+                        <input type="checkbox" ${task.completed ? 'checked' : ''}
+                            onchange="toggleTask(${task.id})"
+                            class="w-5 h-5 rounded border-slate-600 bg-slate-900 cursor-pointer">
+                        <div class="flex-1">
+                            <div class="font-medium ${task.completed ? 'line-through text-slate-500' : ''}">${task.title}</div>
+                            <div class="text-xs text-slate-400 mt-1">
+                                <span class="px-2 py-1 bg-slate-900 rounded">${task.priority}</span>
+                                ${new Date(task.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <button onclick="deleteTask(${task.id})"
+                            class="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all text-sm">
+                            Delete
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Check for existing session
+        if (supabase) {
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    showMainApp(session.user.email);
+                }
+            });
+        }
+    </script>
+    <footer class="text-center text-slate-500 py-4 border-t border-slate-700">
+&copy; 2025 Ayush Aryan. All rights reserved.
+</footer>
+</body>
+</html>
