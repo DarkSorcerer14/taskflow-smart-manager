@@ -6,16 +6,13 @@ It helps developers and students organise tasks efficiently — with local demo 
 ---
 
 ## Features
-- Email-based Sign In / Sign Up (Supabase)
-- Demo Mode (local storage, no login required)
-- Add, complete, or delete tasks easily
-- Filter tasks by:
-  - All
-  - Active
-  - Completed
-  - High Priority
-- Real-time task statistics
-- Smooth animations & gradient UI (Tailwind CSS)
+- Organize, prioritize, and conquer your to-dos
+- Clean, responsive design (mobile + desktop)
+- Light and dark mode (auto-switch & manual toggle)
+- Modern, beautiful gradients and animations
+- Filter, complete, or delete tasks in one click
+- Fast demo mode or secure login via email
+- Privacy-first: Option to use without account (local storage)
 
 ---
 
