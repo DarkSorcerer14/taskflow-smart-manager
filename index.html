@@ -46,24 +46,30 @@
     .demo-box { border-color: #000 !important; border-width: 2px !important;}
     html.dark .demo-box { border-color: #fff !important; }
     html.dark footer { border-color: #fff !important; }
+    #darkModeToggle { left: 2vw; right: auto; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-gradient-to-br text-black dark:text-white relative">
+<body class="min-h-screen flex flex-col bg-gradient-to-br text-black dark:text-white relative items-center">
   <div class="bgflower"></div>
-  <button id="darkModeToggle" class="toggle-btn fixed top-4 right-2 sm:right-4 p-2 rounded-full shadow text-2xl flex items-center justify-center focus:outline-none z-20">
-    <span id="moon">🌙</span>
+  <!-- Dark/Light mode toggle: top-left -->
+  <button id="darkModeToggle" class="toggle-btn fixed top-4 left-2 sm:left-4 p-2 rounded-full shadow text-2xl flex items-center justify-center focus:outline-none z-20">
+    <span id="moon" style="display:block;">🌙</span>
     <span id="sun" class="hidden">☀️</span>
   </button>
-  <div class="flex-1 flex flex-col">
+  <!-- Sign Out mirrored: top-right, hidden by default -->
+  <button id="signOutBtn" style="display:none;" class="toggle-btn fixed top-4 right-2 sm:right-4 p-2 rounded-full shadow text-2xl flex items-center justify-center focus:outline-none z-20">
+    <span class="font-bold text-base sm:text-lg px-3">Sign Out</span>
+  </button>
+  <div class="w-full flex flex-col items-center">
     <!-- AUTH & MAIN APP PAGES -->
-    <div id="authScreen" class="fade-in flex-1 flex flex-col justify-center items-center">
+    <div id="authScreen" class="fade-in w-full flex flex-col items-center justify-center py-6">
       <div class="text-center py-4">
         <h1 class="text-5xl font-extrabold mb-2 tracking-tight force-text">
           <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">TaskFlow</span>
         </h1>
         <p class="text-lg font-bold force-text">Smart task management for productive developers</p>
       </div>
-      <div class="max-w-md w-full card-float rounded-2xl p-6">
+      <div class="max-w-md w-full card-float rounded-2xl p-6 mx-auto text-center">
         <div class="mb-6">
           <button id="signInBtn" class="w-full px-6 py-3 btn-main rounded-lg font-bold mb-3 text-lg force-text">Sign In with Email</button>
           <button id="signUpBtn" class="w-full px-6 py-3 btn-secondary rounded-lg font-bold text-lg force-text">Create Account</button>
@@ -80,46 +86,45 @@
         </div>
       </div>
     </div>
-    <div id="mainApp" class="hidden fade-in flex-1 flex flex-col">
-      <div>
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-6 gap-2 sm:gap-0 text-center sm:text-left">
-          <div>
-            <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-1 force-text">TaskFlow</h1>
-            <p class="text-base sm:text-lg font-bold mt-1 sm:mt-2 force-text" id="userEmail"></p>
-          </div>
-          <button id="signOutBtn" class="px-4 py-2 btn-secondary rounded-lg transition-all font-bold text-base force-text">Sign Out</button>
+    <div id="mainApp" class="hidden fade-in w-full flex flex-col items-center justify-start py-6">
+      <div class="w-full max-w-2xl flex flex-col items-center">
+        <!-- Centered Heading only -->
+        <div class="mb-6 w-full flex flex-col items-center">
+          <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-1 force-text">
+            TaskFlow
+          </h1>
+          <p class="text-base sm:text-lg font-bold mt-1 sm:mt-2 force-text" id="userEmail"></p>
         </div>
-        <div class="card-float rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4">
-          <h2 class="text-xl sm:text-2xl font-extrabold mb-3 sm:mb-4 force-text">Add New Task</h2>
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+        <div class="card-float rounded-2xl p-6 mb-4 w-full flex flex-col items-center">
+          <h2 class="text-xl sm:text-2xl font-extrabold mb-4 force-text text-center">Add New Task</h2>
+          <div class="w-full flex flex-col sm:flex-row gap-3 items-center">
             <input type="text" id="taskInput" placeholder="What needs to be done?" class="flex-1 input-box px-4 py-3 rounded-lg focus:outline-none text-base sm:text-lg font-bold force-text">
             <select id="prioritySelect" class="input-box px-4 py-3 rounded-lg focus:outline-none text-base sm:text-lg font-bold force-text">
               <option value="low">Low 🟢</option>
               <option value="medium" selected>Medium 🟡</option>
               <option value="high">High 🔴</option>
             </select>
-            <button id="addTaskBtn" class="btn-main px-4 sm:px-6 py-3 rounded-lg font-bold transition-all text-base sm:text-lg force-text mt-2 sm:mt-0">Add</button>
+            <button id="addTaskBtn" class="btn-main px-6 py-3 rounded-lg font-bold transition-all text-base sm:text-lg force-text mt-2 sm:mt-0">Add</button>
           </div>
         </div>
-        <div class="flex flex-wrap justify-center sm:justify-start gap-2 mb-3 sm:mb-5">
-          <button class="filter-btn active px-4 py-2 rounded-lg text-base sm:text-lg btn-secondary transition-all font-bold force-text" data-filter="all">All</button>
-          <button class="filter-btn px-4 py-2 rounded-lg text-base sm:text-lg btn-secondary transition-all font-bold force-text" data-filter="active">Active</button>
-          <button class="filter-btn px-4 py-2 rounded-lg text-base sm:text-lg btn-secondary transition-all font-bold force-text" data-filter="completed">Completed</button>
-          <button class="filter-btn px-4 py-2 rounded-lg text-base sm:text-lg btn-secondary transition-all font-bold force-text" data-filter="high">High Priority</button>
+        <div class="w-full flex flex-wrap justify-center gap-3 mb-5">
+          <button class="filter-btn active px-4 py-2 rounded-lg text-base btn-secondary transition-all font-bold force-text" data-filter="all">All</button>
+          <button class="filter-btn px-4 py-2 rounded-lg text-base btn-secondary transition-all font-bold force-text" data-filter="active">Active</button>
+          <button class="filter-btn px-4 py-2 rounded-lg text-base btn-secondary transition-all font-bold force-text" data-filter="completed">Completed</button>
+          <button class="filter-btn px-4 py-2 rounded-lg text-base btn-secondary transition-all font-bold force-text" data-filter="high">High Priority</button>
         </div>
-      </div>
-      <div class="flex-1 min-h-0 flex flex-col">
-        <div id="tasksList" class="space-y-3 flex-1 min-h-[80px] max-h-[25vh] sm:max-h-[38vh] overflow-y-auto"></div>
-        <div class="mt-3 sm:mt-4 grid grid-cols-3 gap-3 sm:gap-4 text-center flex-shrink-0 mb-3 sm:mb-4">
-          <div class="card-float rounded-xl p-2 sm:p-4">
+        <div id="tasksList" class="w-full flex flex-col items-center space-y-3 mb-4"></div>
+        <!-- Stat boxes: symmetric with flex-1 -->
+        <div class="mt-3 grid grid-cols-3 gap-4 w-full text-center">
+          <div class="card-float rounded-xl p-4 flex flex-col items-center flex-1">
             <div class="text-2xl sm:text-3xl font-extrabold force-text" id="totalTasks">0</div>
             <div class="text-base sm:text-lg font-bold mt-1 force-text">Total</div>
           </div>
-          <div class="card-float rounded-xl p-2 sm:p-4">
+          <div class="card-float rounded-xl p-4 flex flex-col items-center flex-1">
             <div class="text-2xl sm:text-3xl font-extrabold force-text" id="activeTasks">0</div>
             <div class="text-base sm:text-lg font-bold mt-1 force-text">Active</div>
           </div>
-          <div class="card-float rounded-xl p-2 sm:p-4">
+          <div class="card-float rounded-xl p-4 flex flex-col items-center flex-1">
             <div class="text-2xl sm:text-3xl font-extrabold force-text" id="completedTasks">0</div>
             <div class="text-base sm:text-lg font-bold mt-1 force-text">Completed</div>
           </div>
@@ -128,30 +133,55 @@
     </div>
   </div>
 <footer
-  class="text-center py-4 text-xs sm:text-sm select-none force-text border-t-2"
+  class="w-full text-center py-4 text-xs sm:text-sm select-none force-text border-t-2 mt-6"
   style="border-color: #000;"
 >
   &copy; 2025 <span class="font-semibold">Ayush Aryan</span>. All rights reserved.
 </footer>
   <script>
-    // Theme toggle logic
+    // Default = dark mode unless user picked light
     const toggle = document.getElementById('darkModeToggle');
     const moon = document.getElementById('moon');
     const sun = document.getElementById('sun');
+
+    if (localStorage.getItem('tfDark') === 'no') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('tfDark', 'yes');
+    }
+
     function updateTheme() {
       const dark = document.documentElement.classList.contains('dark');
       moon.style.display = dark ? 'block' : 'none';
       sun.style.display = dark ? 'none' : 'block';
     }
+
     toggle.addEventListener('click', () => {
       document.documentElement.classList.toggle('dark');
       localStorage.setItem('tfDark', document.documentElement.classList.contains('dark') ? 'yes' : 'no');
       updateTheme();
     });
-    if (localStorage.getItem('tfDark') === 'yes') document.documentElement.classList.add('dark');
     updateTheme();
 
-    // Main app logic keeps working
+    // Sign Out Button visibility control
+    function updateSignOutBtnVisibility() {
+      const signOutBtn = document.getElementById('signOutBtn');
+      const mainAppVisible = !document.getElementById('mainApp').classList.contains('hidden');
+      signOutBtn.style.display = mainAppVisible ? 'flex' : 'none';
+    }
+
+    const signOutBtn = document.getElementById('signOutBtn');
+    signOutBtn.onclick = function() {
+      if (typeof supabase !== "undefined" && supabase && !isDemoMode) supabase.auth.signOut();
+      isDemoMode = false;
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('authScreen').classList.remove('hidden');
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+      updateSignOutBtnVisibility();
+    };
+
     const SUPABASE_URL = 'https://ewnjcqkgizohtncwjeam.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3bmpjcWtnaXpvaHRuY3dqZWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2MzIwOTksImV4cCI6MjA3NjIwODA5OX0.DCq-KKWKILIfq0FGkkGGeuIputYIToCd-n7akTkl3vo';
     let supabase = null;
@@ -168,17 +198,15 @@
     const authSubmit = document.getElementById('authSubmit');
     const authCancel = document.getElementById('authCancel');
     const userEmail = document.getElementById('userEmail');
-    const signOutBtn = document.getElementById('signOutBtn');
     const taskInput = document.getElementById('taskInput');
     const prioritySelect = document.getElementById('prioritySelect');
     const addTaskBtn = document.getElementById('addTaskBtn');
     const tasksList = document.getElementById('tasksList');
     signInBtn.onclick = () => { isSignUp = false; showAuthForm(); };
     signUpBtn.onclick = () => { isSignUp = true; showAuthForm(); };
-    demoBtn.onclick = startDemoMode;
+    demoBtn.onclick = function() { startDemoMode(); updateSignOutBtnVisibility(); };
     authCancel.onclick = hideAuthForm;
     authSubmit.onclick = handleAuth;
-    signOutBtn.onclick = handleSignOut;
     addTaskBtn.onclick = addTask;
     if (taskInput) taskInput.onkeypress = (e) => { if (e.key === 'Enter') addTask(); };
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -218,25 +246,21 @@
           showMainApp(email);
         }
         hideAuthForm();
+        updateSignOutBtnVisibility();
       } catch (error) { alert(error.message); }
     }
     function startDemoMode() {
       isDemoMode = true;
       showMainApp('demo@taskflow.local');
       loadDemoTasks();
+      updateSignOutBtnVisibility();
     }
     function showMainApp(email) {
       authScreen.classList.add('hidden');
       mainApp.classList.remove('hidden');
       userEmail.textContent = isDemoMode ? 'Demo Mode (Local Storage)' : email;
       renderTasks();
-    }
-    function handleSignOut() {
-      if (supabase && !isDemoMode) supabase.auth.signOut();
-      isDemoMode = false;
-      mainApp.classList.add('hidden');
-      authScreen.classList.remove('hidden');
-      hideAuthForm();
+      updateSignOutBtnVisibility();
     }
     function loadDemoTasks() {
       const stored = localStorage.getItem('demoTasks');
@@ -264,7 +288,7 @@
     window.toggleTask = function(id) {
       const tasks = getTasks();
       const task = tasks.find(t => t.id === id);
-      if (task) { task.completed = !task.completed; saveTasks(tasks); renderTasks();}
+      if (task) { task.completed = !task.completed; saveTasks(tasks); renderTasks(); }
     }
     window.deleteTask = function(id) {
       const tasks = getTasks().filter(t => t.id !== id); saveTasks(tasks); renderTasks();
@@ -284,14 +308,14 @@
       tasksList.innerHTML = tasks.map(task => {
         const emoji = { high: "🔴", medium: "🟡", low: "🟢" }[task.priority];
         return `
-          <div class="task-item card-float rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 force-text">
+          <div class="task-item card-float rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 mx-auto w-full max-w-lg force-text justify-center">
             <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})"
-              class="w-5 h-5 rounded border-2 bg-white dark:bg-[#240046] cursor-pointer transition-all duration-200 focus:ring-2 focus:ring-[#993AFE] mt-1 sm:mt-0">
-            <div class="flex-1 min-w-0">
+              class="w-5 h-5 rounded border-2 bg-white dark:bg-[#240046] cursor-pointer transition-all duration-200 focus:ring-2 focus:ring-[#993AFE]">
+            <div class="flex-1 min-w-0 text-center">
               <div class="font-bold text-lg sm:text-xl force-text ${task.completed ? 'line-through opacity-65' : ''}">
                 ${emoji} ${task.title}
               </div>
-              <div class="flex flex-wrap items-center gap-2 mt-1 text-base sm:text-lg force-text">
+              <div class="flex flex-wrap items-center gap-2 mt-1 text-base sm:text-lg force-text justify-center">
                 <span>${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
                 <span>|</span>
                 <span class="opacity-60">${new Date(task.created_at).toLocaleDateString()}</span>
@@ -303,6 +327,8 @@
       }).join('');
     }
     if (supabase) supabase.auth.getSession().then(({ data: { session } }) => { if (session) showMainApp(session.user.email); });
+    // Run at startup
+    updateSignOutBtnVisibility();
   </script>
 </body>
 </html>
