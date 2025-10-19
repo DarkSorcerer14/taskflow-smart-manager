@@ -34,9 +34,9 @@ Check out the deployed project: https://darksorcerer14.github.io/taskflow-smart-
 ---
 
 ## Standout Features
-- No Sign-Up Required: Use locally, seamlessly sync if you choose to log in.
-- Analytics Dashboard: Track your productivity and patterns at a glance.
-- Progressive UI: Built with responsive layouts and animated elements for an enjoyable user experience.
+- **No Sign-Up Required:** Use locally, seamlessly sync if you choose to log in.
+- **Analytics Dashboard:** Track your productivity and patterns at a glance.
+- **Progressive UI:** Built with responsive layouts and animated elements for an enjoyable user experience.
 
 ---
 
@@ -56,7 +56,7 @@ Your tasks are yours. Choose between secure cloud sync or local-only mode for ma
 ---
 
 ## License
-This project is licensed under the MIT License
+This project is licensed under the **MIT License**
 
 ---
 
