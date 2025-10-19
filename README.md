@@ -29,7 +29,7 @@ Check out the deployed project: https://darksorcerer14.github.io/taskflow-smart-
 ---
 
 ## Why TaskFlow?
-**TaskFlow** was created to provide a minimal, focused, and visually appealing task management experience—without the distractions or privacy tradeoffs of traditional solutions. It’s optimised for fast entry, easy navigation, and data safety.
+**TaskFlow** was created to provide a minimal, focused, and visually appealing task management experience without the distractions or privacy tradeoffs of traditional solutions. It’s optimised for fast entry, easy navigation, and data safety.
 
 ---
 
