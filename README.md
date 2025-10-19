@@ -1,6 +1,6 @@
 ## TaskFlow – Smart Task Manager
 
-**TaskFlow** is a modern, browser-based task manager built with **Tailwind CSS** and **Supabase** (optional).  
+**TaskFlow** is a modern, browser-based task manager built with **Tailwind CSS** and **Supabase**.  
 It helps developers and students organise tasks efficiently — with local demo mode support, priority tags, and live stats.
 
 ---
@@ -35,6 +35,11 @@ Categories / Projects
 Offline-First Mode (PWA)
 
 Progress Analytics Dashboard
+
+---
+
+## Deployment
+GitHub Pages - https://darksorcerer14.github.io/taskflow-smart-manager/
 
 ---
 
